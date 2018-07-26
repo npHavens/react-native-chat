@@ -1,7 +1,12 @@
 import React from 'react';
+import io from 'socket.io-client';
 import { StyleSheet, Text, View, Button, AlertIOS } from 'react-native';
 
 import { default as Room } from './Room';
+
+const socket = io('http://localhost:3000');
+//const socket = io('https://socket-server.apps.us2.bosch-iot-cloud.com');
+
 
 export default class App extends React.Component {
   constructor(props) {
@@ -18,8 +23,18 @@ export default class App extends React.Component {
     }
   }
 
+  componentWillMount() {
+    socket.on('log', (data) => {
+      console.log(data.msg)
+    });
+
+    socket.on('serverMsg', (data) => {
+      this.handleServerMessage(data.msg)
+    })
+  }
+
+
   handleJoinRoom = () => {
-    console.log('JOINING ROOM', this.state.room)
     AlertIOS.prompt(
       'Enter Room Name',
       'Enter the name of the room you would like to join',
@@ -33,18 +48,25 @@ export default class App extends React.Component {
           text: 'Join',
           onPress: (roomName) => {
             this.setState({ room: roomName });
+            socket.emit('joinRoom', { room: this.state.room })
+            console.log('JOINING ROOM', this.state.room)
           },
         },
       ]
     );
   } 
 
-  handleNewMessage = ({ text, username }) => {
+  handleNewMessage = ({ text, username, room }) => {
+    socket.emit('newMsg', { msg: { text, username, room } });
     console.log('SENDING NEW MESSAGE');
+   
+  }
+  
+  handleServerMessage = ({ text, username, room }) => {
     const currentMessages = this.state.messages;
-    currentMessages.push({ text, username });
+    currentMessages.push({ text, username, room });
     this.setState({ messages: currentMessages });
-  } 
+  }
 
   render() {
     return (
@@ -54,6 +76,7 @@ export default class App extends React.Component {
           <Room {...this.state} handleNewMessage={this.handleNewMessage}/>
         </View> :
           <Button
+            style={styles.button}
             onPress={this.handleJoinRoom}
             title="Join Room"
             color="#164882"
@@ -66,8 +89,10 @@ export default class App extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  button: {
+    fontSize: 36
+  },
   container: {
-
     flex: 1,
     backgroundColor: '#ededed',
     alignItems: 'center',
