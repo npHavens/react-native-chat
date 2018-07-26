@@ -39,8 +39,11 @@ export default class App extends React.Component {
     );
   } 
 
-  handleNewMessage = () => {
+  handleNewMessage = ({ text, username }) => {
     console.log('SENDING NEW MESSAGE');
+    const currentMessages = this.state.messages;
+    currentMessages.push({ text, username });
+    this.setState({ messages: currentMessages });
   } 
 
   render() {
@@ -48,13 +51,7 @@ export default class App extends React.Component {
       <View style={styles.container}>
       {this.state.room ? 
         <View>
-          <Room {...this.state} />
-          <Button
-            onPress={this.handleNewMessage}
-            title="New Message"
-            color="#164882"
-            accessibilityLabel="New Message"
-          /> 
+          <Room {...this.state} handleNewMessage={this.handleNewMessage}/>
         </View> :
           <Button
             onPress={this.handleJoinRoom}
