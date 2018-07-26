@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button } from 'react-native';
+import { StyleSheet, Text, View, Button, AlertIOS } from 'react-native';
 
 import { default as Room } from './Room';
 
@@ -20,12 +20,27 @@ export default class App extends React.Component {
 
   handleJoinRoom = () => {
     console.log('JOINING ROOM', this.state.room)
-    this.setState({ room: 'test room' })
+    AlertIOS.prompt(
+      'Enter Room Name',
+      'Enter the name of the room you would like to join',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'Join',
+          onPress: (roomName) => {
+            this.setState({ room: roomName });
+          },
+        },
+      ]
+    );
   } 
 
   handleNewMessage = () => {
-    console.log('SENDING NEW MESSAGE')
-    
+    console.log('SENDING NEW MESSAGE');
   } 
 
   render() {
@@ -33,13 +48,13 @@ export default class App extends React.Component {
       <View style={styles.container}>
       {this.state.room ? 
         <View>
+          <Room {...this.state} />
           <Button
             onPress={this.handleNewMessage}
             title="New Message"
             color="#164882"
             accessibilityLabel="New Message"
           /> 
-          <Room {...this.state}/>
         </View> :
           <Button
             onPress={this.handleJoinRoom}

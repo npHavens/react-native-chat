@@ -1,18 +1,26 @@
 import React from 'react';
-import { StyleSheet, View, Text, Button } from 'react-native';
+import { StyleSheet, ScrollView, Text, Button } from 'react-native';
 
 import { default as Message } from './Message';
 
 export default Room = ({ room, messages }) => {
-    console.log(room, messages)
     return (
-        <View>
+        <ScrollView contentContainerStyle={styles.container}>
             <Text>{room}</Text>
             { 
-                messages.map((msg) => {
-                    return <Message {...msg} room={room}/>
+                messages.map((msg, i) => {
+                    return <Message {...msg} room={room} key={i}/>
                 })
              }
-        </View>
+        </ScrollView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#ededed',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+});
