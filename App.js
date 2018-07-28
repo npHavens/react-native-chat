@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, Button, AlertIOS } from 'react-native';
 
 import { default as Room } from './Room';
 
-const socket = io('http://localhost:3000');
+const socket = io('https://simple-socket-server.herokuapp.com/');
 //const socket = io('https://socket-server.apps.us2.bosch-iot-cloud.com');
 
 
@@ -57,9 +57,8 @@ export default class App extends React.Component {
   } 
 
   handleNewMessage = ({ text, username, room }) => {
-    socket.emit('newMsg', { msg: { text, username, room } });
-    console.log('SENDING NEW MESSAGE');
-   
+    socket.emit('newMsg', { msg: { text, username}, room });
+    console.log('SENDING NEW MESSAGE TO:', room); 
   }
   
   handleServerMessage = ({ text, username, room }) => {
